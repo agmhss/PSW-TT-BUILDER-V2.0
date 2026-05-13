@@ -595,25 +595,58 @@ window.saveDutiesToCloud = async function() {
     }
 };
 
-// --- EXPORT PDF (With Dynamic App Config Strings) ---
+// --- EXPORT PDF (Landscape Mode & Classroom Display Optimized) ---
 window.exportPDF = function() {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    
+    // 'l' stands for Landscape, 'mm' for millimeters, 'a4' for paper size
+    const doc = new jsPDF('l', 'mm', 'a4'); 
+    
     const mode = document.getElementById('opMode').value;
     const selectedDate = getSelectedDateStr();
     
     if (mode === 'exam') {
+        doc.setFontSize(14);
         doc.text(`${APP_CONFIG.shortName} Exam Invigilation Schedule`, 14, 15);
+        doc.setFontSize(11);
         doc.text(`Date: ${selectedDate} | Session: ${currentSession}`, 14, 25);
         doc.text("Please use screenshot for Exam Duty Cards.", 14, 35);
     } else if (mode === 'substitution') {
         const day = document.getElementById('subDay').value;
+        doc.setFontSize(14);
         doc.text(`${APP_CONFIG.shortName} Substitution Duty - ${selectedDate} (${day})`, 14, 15);
+        doc.setFontSize(11);
         doc.text("Please use the 'Print' button on the screen.", 14, 25);
     } else {
         const filterVal = document.getElementById('viewFilter').value;
-        doc.text(`${APP_CONFIG.shortName} Timetable - ${filterVal}`, 14, 15);
-        doc.autoTable({ html: '#scheduleTable', startY: 20, theme: 'grid', styles: { fontSize: 8 } });
+        
+        // தலைப்பைச் சற்றுப் பெரிதாக்குதல்
+        doc.setFontSize(16);
+        doc.setTextColor(30, 58, 138); // Dark Blue Text
+        doc.text(`${APP_CONFIG.shortName} Timetable - ${filterVal}`, 14, 18);
+        
+        // Landscape-க்கு ஏற்றவாறு டேபிளை விரிவுபடுத்துதல்
+        doc.autoTable({ 
+            html: '#scheduleTable', 
+            startY: 25, 
+            theme: 'grid', 
+            styles: { 
+                fontSize: 10,       // எழுத்துக்களின் அளவு பெரிதாக்கப்பட்டுள்ளது
+                cellPadding: 4,     // சுற்றிலும் இடைவெளி (Breathing room)
+                halign: 'center',   // Center alignment
+                valign: 'middle'    // Vertical center alignment
+            },
+            headStyles: { 
+                fillColor: [41, 128, 185], // Header-க்கு நல்ல நீல நிறம்
+                textColor: 255,
+                fontSize: 11,
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+                fillColor: [245, 247, 250] // வாசிப்பதற்கு எளிதாக வரிக்கு வரி மெல்லிய நிறம்
+            }
+        });
     }
+    
     doc.save(`${APP_CONFIG.shortName}_Schedule_${selectedDate}.pdf`);
 };
