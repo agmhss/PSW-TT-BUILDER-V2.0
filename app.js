@@ -2,6 +2,7 @@
  * app.js - Advanced Timetable, Exam & Substitution Engine
  * Version: Ultimate Master Build + Human-Machine Collaborative Editor
  */
+
 const APP_CONFIG = {
     fullName: "AGMHSS PATTEESWARAM", 
     shortName: "AGMHSS PSW",                                           
